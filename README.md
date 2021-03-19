@@ -5,39 +5,35 @@
 
 ### Proof
 
-- [] Core
-
-### Q1 
-
-- [] Ported policies (ur, hails etc)
-	- [] Scripts to generate table
+- [x] **S6** Core
 
 
-### Q2 
+- [] **S7.1** SPorted policies (ur, hails etc)
+	- [] Script to generate table 1 (policies)
 
-- [] Ported apps 
+- [] **S7.2** Ported apps 
 	- how to build
 	- how to edit to break some policy
 
-### Q3 
+- [] **S7.3** 
+	- Voltron
+	  - how to build
+	  - how to edit to break some policy
+	  - how to run
 
-- [] Voltron
-	- how to build
-	- how to edit to break some policy
-	- how to run
+	- [] Disco 
+	  - how to build
+	  - how to edit to break some policy
+	  - how to run
 
-- [] Disco 
-	- how to build
-	- how to edit to break some policy
-	- how to run
+- [] Scripts to generate Figure 9 (annotations)
 
-- [] Scripts to generate table
 
 ### Packaging
 
 - [] docker or VM?
 
-## Core (Section 5)
+## Core (Section 6)
 
 Do this
 
