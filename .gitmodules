@@ -1,0 +1,3 @@
+[submodule "storm-core"]
+	path = storm-core
+	url = https://github.com/storm-framework/core.git
