@@ -1,3 +1,9 @@
 [submodule "storm-core"]
 	path = storm-core
 	url = https://github.com/storm-framework/core.git
+[submodule "disco"]
+	path = disco
+	url = git@github.com:binah-framework/disco
+[submodule "voltron"]
+	path = voltron
+	url = git@github.com:binah-framework/voltron
