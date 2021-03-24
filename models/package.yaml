@@ -1,0 +1,55 @@
+name:                models
+version:             0.1.0.0
+github:              "nilehmann/secret"
+license:             BSD3
+author:              "Nico Lehmann"
+maintainer:          "nlehmann@eng.ucsd.edu"
+copyright:           "2020 Nico Lehmann"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/nilehmann/secret#readme>
+
+dependencies:
+- liquid-base
+- liquidhaskell
+- storm
+- frankie
+- persistent
+- persistent-template
+
+library:
+  source-dirs: src
+  ghc-options: -fplugin=LiquidHaskell
+
+
+executables:
+  secret-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - models
+
+tests:
+  secret-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - secret

@@ -1,0 +1,60 @@
+module UrWeb.Gradebook.Model where
+
+predicate isAdmin :: UserId -> Bool
+predicate isInstructor :: UserId -> CourseId -> Bool
+predicate isTA :: UserId -> CourseId -> Bool
+
+User
+  name String
+  pass String
+
+  read [ pass ] {\user viewer -> user == viewer}
+
+
+RootAdmin
+  user UserId
+
+  assert { isAdmin user }
+
+Course
+  name String
+
+  insert {\_ user -> IsAdmin user}
+  update [ course, user ] {\_ _ user -> IsAdmin user}
+
+Instructor
+  course CourseId
+  user UserId
+
+  assert { isInstructor user course }
+
+  insert {\_ user -> IsAdmin user}
+  update [ course, user ] {\_ _ user -> IsAdmin user}
+
+TA
+  course CourseId
+  user UserId
+
+  assert { isTA user course }
+
+  insert {\row user -> IsAdmin user || IsInstructorT user row }
+  update [ course, user ] {\_ _ user -> IsAdmin user}
+  update [ user ] {\old _ user -> IsInstructorT user old}
+
+Student
+  course CourseId
+  user UserId
+  grade String Maybe
+
+  read [ course, user, grade ] {\row viewer ->
+    IsInstructorS viewer row || studentUser row == entityKey viewer || IsTAS viewer row
+  }
+
+  insert {\row user -> IsAdmin user || IsInstructorS user row}
+  update [ course, user ] {\_ _ user -> IsAdmin user}
+  update [ user ] {\old _ user -> IsInstructorS user old}
+
+policy IsAdmin = \user -> isAdmin (entityKey user)
+policy IsInstructorT = \user row -> isInstructor (entityKey user) (tACourse row)
+policy IsInstructorS = \user row -> isInstructor (entityKey user) (studentCourse row)
+policy IsTAS = \user row -> isTA (entityKey user) (studentCourse row)

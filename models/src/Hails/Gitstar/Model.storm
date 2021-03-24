@@ -1,0 +1,52 @@
+module Hails.Gitstar.Model where
+
+predicate isReader :: UserId -> ProjectId -> Bool
+predicate isCollaborator :: UserId -> ProjectId -> Bool
+predicate isOwner :: UserId -> ProjectId -> Bool
+
+User
+  keys String
+
+  update [ keys ] {\old _ user -> entityKey user == entityKey old}
+
+Apps
+  owner UserId
+  name String
+
+  update [ name ] {\old _ user -> appsOwner old == entityKey user}
+
+Project
+  owner UserId
+  name String
+  public Bool
+
+  assert { isOwner owner entityKey }
+
+  read [ owner, name ] {\project user ->
+    projectPublic project || IsCollaboratorP user project || IsReaderP user project
+  }
+  insert {\row user -> entityKey user == projectOwner row}
+  update [ name, public ] {\old _ user -> entityKey user == projectOwner old }
+
+Reader
+  user UserId
+  project ProjectId
+
+  assert { isReader user project }
+  insert {\row user -> IsOwnerR user row }
+  update [ user ] {\old _ user -> IsOwnerR user old}
+
+
+Collaborator
+  user UserId
+  project ProjectId
+
+  assert { isCollaborator user project }
+  insert {\row user -> IsOwnerC user row}
+  update [ user ] {\old _ user -> IsOwnerC user old}
+
+
+policy IsReaderP = \user project -> isReader (entityKey user) (entityKey project)
+policy IsCollaboratorP = \user project -> isCollaborator (entityKey user) (entityKey project)
+policy IsOwnerR = \user row -> isOwner (entityKey user) (readerProject row)
+policy IsOwnerC = \user row -> isOwner (entityKey user) (collaboratorProject row)

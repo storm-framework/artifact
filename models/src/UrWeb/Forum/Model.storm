@@ -1,0 +1,65 @@
+module UrWeb.Forum.Model where
+
+predicate isRootAdmin :: UserId -> Bool
+predicate isForumAdmin :: UserId -> ForumId -> Bool
+predicate canRead :: UserId -> ForumId -> Bool
+predicate canWrite :: UserId -> ForumId -> Bool
+predicate isPublic :: ForumId -> Bool
+
+User
+  name String
+  pass String
+
+  read [ pass ] {\user viewer -> user == viewer}
+
+RootAdmin
+  user UserId
+  assert { isRootAdmin user }
+
+Forum
+  name String
+  public Bool
+  assert { public => isPublic entityKey }
+
+  insert {\_ user -> IsRootAdmin user}
+  update [ name, public ] {\_ _ user -> IsRootAdmin user}
+  read [ name ] {\forum viewer ->
+    forumPublic forum || IsRootAdmin viewer || CanReadF viewer forum
+  }
+
+Acl
+  forum ForumId
+  user UserId
+  level String
+  assert { level == "admin" => isForumAdmin user forum }
+  assert { canRead user forum }
+  assert { (level == "admin" || level == "write") => canWrite user forum}
+
+  insert {\row user -> IsForumAdminA user row || IsRootAdmin user}
+  update [ forum, user, level ] {\_ _ user -> IsRootAdmin user}
+  update [ user, level ] {\old _ user -> IsForumAdminA user old}
+  read [ forum, user, level ] {\row viewer ->
+    entityKey viewer == aclUser row || IsRootAdmin viewer || IsForumAdminA viewer row
+  }
+
+Message
+  forum ForumId
+  user UserId
+  subject String
+  body String
+  time Int
+
+  insert {\row user -> IsRootAdmin user || CanWriteM user row}
+  update [ forum, subject, body ] {\_ _ user -> IsRootAdmin user}
+  update [ subject, body, time ] {\old _ user -> CanWriteM user old}
+  read [ subject, body, time ] {\row viewer ->
+    IsPublicM row || CanReadM viewer row || IsRootAdmin viewer
+  }
+
+
+policy IsRootAdmin = \user -> isRootAdmin (entityKey user)
+policy IsForumAdminA = \user acl -> isForumAdmin (entityKey user) (aclForum acl)
+policy CanReadF = \user forum -> canRead (entityKey user) (entityKey forum)
+policy IsPublicM = \message -> isPublic (messageForum message)
+policy CanReadM = \user message -> canRead (entityKey user) (messageForum message)
+policy CanWriteM = \user message -> canWrite (entityKey user) (messageForum message)

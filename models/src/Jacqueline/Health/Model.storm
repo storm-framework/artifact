@@ -1,0 +1,123 @@
+module Jacqueline.Health.Model where
+
+User
+  username String
+  email String
+  profileType Int
+  name String
+  entity CoveredEntityId Maybe
+  associate BusinessAssociateId Maybe
+  individual IndividualId Maybe
+
+  read [ email ] {\row viewer -> row == viewer}
+
+Address
+  street String Maybe
+  city String
+  state String
+  zipcode String
+
+Individual
+  firstName String
+  lastName String
+  email String Maybe
+  asddress AddressId Maybe
+  birthDate String Maybe
+  ssn String Maybe
+  thelephoneNumber String Maybe
+  faxNumber String Maybe
+  driversLicenseNumber String Maybe
+  employer String Maybe
+  religiousAffiliation String Maybe
+
+  read [ firstName, lastName, email, address, birdhDate, ssn, telephoneNumber,
+         faxNumber, driversLicenseNumber, employer, religiousAffiliation
+       ]
+       {\row viewer -> userProfileType viewer == 1 || fromJust (userIndividual viewer) == entityKey row}
+
+BusinessAssociate
+  name String
+  covered Bool
+
+CoveredEntity
+  ein String
+  name String
+
+HospitalVisit
+  patient IndividualId
+  hospital CoveredEntityId
+  dateAdmitted String Maybe
+  location String Maybe
+  condition String Maybe
+  dateReleased String Maybe
+
+  read [ location ] {\row viewer ->
+    (userProfileType viewer == 1 => hospitalVisitPatient row == fromJust (userIndividual viewer)) ||
+    (userProfileType viewer == 2 => hospitalVisitHospital row == fromJust (userEntity viewer)) ||
+    userProfileType viewer == 6
+  }
+
+Treatment
+  service String
+  datePerformed String
+  prescribingEntity CoveredEntityId Maybe
+  performingEntity CoveredEntityId Maybe
+  patient IndividualId Maybe
+
+  read [ patient ] {\row viewer ->
+    (userProfileType viewer == 1 => treatmentPatient row == userIndividual viewer) ||
+    (userProfileType viewer == 2 => treatmentPrescribingEntity row == userEntity viewer)
+  }
+
+Diagnosis
+  manifestation String
+  diagnosis String
+  dateRecognized String
+  recognizingEntity CoveredEntityId
+  patitent IndividualId Maybe
+
+InformationTransferSet
+  data String
+
+TreatmentTransfer
+  set InformationTransferSetId
+  treatment TreatmentId
+
+DiagnosisTransfer
+  set InformationTransferSetId
+  diagnosis DiagnosisId
+
+HospitalVisitTransfer
+  set InformationTransferSetId
+  visit HospitalVisitId
+
+BusinessAssociateAgreement
+  businessAssociate BusinessAssociateId
+  coveredEntity CoveredEntityId
+  sharedInformation InformationTransferSetId
+  purpose String Maybe
+
+  read [ sharedInformation] {\row viewer ->
+    businessAssociateAgreementCoveredEntity row == fromJust (userEntity viewer) ||
+    businessAssociateAgreementBusinessAssociate row == fromJust (userAssociate viewer)
+  }
+
+Transaction
+  standard String
+  firstParty CoveredEntityId
+  secondParty CoveredEntityId
+  sharedInformation InformationTransferSetId
+  dateRequested String
+  dateResponded String
+  purpose String
+
+  read [ standard, firstParty, secondParty, purpose ] {\row viewer ->
+     userProfileType viewer == 2 ||
+     transactionFirstParty row == fromJust (userEntity viewer) ||
+     transactionSecondParty row == fromJust (userEntity viewer)
+  }
+
+PersonalRepresentative
+  dependent IndividualId
+  representative IndividualId
+  parent Bool

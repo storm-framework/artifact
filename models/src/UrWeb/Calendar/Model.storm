@@ -1,0 +1,60 @@
+module UrWeb.Calendar.Model where
+
+predicate isAttendee :: UserId -> EventId -> Bool
+predicate hasTimeAccess :: UserId -> EventId -> Bool
+
+User
+  name String
+  pass String
+
+  read [ pass ] {\user viewer -> user == viewer}
+
+Event
+  creator UserId
+  time Int
+  title String
+  desc String
+
+  insert {\event viewer -> eventCreator event == entityKey viewer}
+
+  update [ creator, time, title, desc ] {\old new viewer ->
+    eventCreator old == eventCreator new &&
+    eventCreator old == entityKey viewer
+  }
+
+  read [ creator, time, title, desc ] {\event viewer ->
+    eventCreator event == entityKey viewer ||
+    isAttendee (entityKey viewer) (entityKey event)
+  }
+
+  read [ time ] {\event viewer -> hasTimeAccess (entityKey viewer) (entityKey event)}
+
+Attendee
+  event EventId
+  user UserId
+
+  assert { isAttendee user event }
+
+  insert {\row user ->
+    entityKey user == eventCreator (getJust (attendeeEvent row))
+  }
+
+  update [event, user] {\old new user ->
+    attendeeEvent old == attendeeEvent new &&
+    entityKey user == eventCreator (getJust (attendeeEvent old))
+  }
+
+TimeOnly
+  event EventId
+  user UserId
+
+  assert { hasTimeAccess user event }
+
+  insert {\row user ->
+    entityKey user == eventCreator (getJust (timeOnlyEvent row))
+  }
+
+  update [event, user] {\old new user ->
+    timeOnlyEvent old == timeOnlyEvent new &&
+    entityKey user == eventCreator (getJust (timeOnlyEvent old))
+  }

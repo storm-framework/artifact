@@ -1,0 +1,41 @@
+module UrWeb.Poll.Model where
+
+predicate isLive :: PollId -> Bool
+predicate isPollOwner :: UserId -> PollId -> Bool
+
+User
+  code String
+
+  read [ code ] {\user viewer -> user == viewer}
+
+Poll
+  name String
+  owner UserId
+  live Bool
+  assert { live => isLive entityKey }
+
+  insert {\row user -> not (pollLive row) && pollOwner row == entityKey user}
+  update [ live ] {\old new user -> pollOwner old == entityKey user && pollLive new}
+  read [ name, owner, live ] {\row viewer -> pollLive row || pollOwner row == entityKey viewer}
+
+Question
+  poll PollId
+  text String
+
+  insert {\row user -> not (IsLiveQ row) && IsPollOwnerQ user row}
+  read [ poll, text ] {\row user -> IsPollOwnerQ user row || IsLiveQ row}
+
+Answer
+  poll PollId
+  owner UserId
+  text String
+
+  insert {\row user -> answerOwner row == entityKey user && IsLiveA row}
+  read [ poll, owner ] { \row viewer -> IsPollOwnerA viewer row}
+  read [ poll, owner ] { \row viewer -> answerOwner row == entityKey viewer}
+
+
+policy IsLiveQ = \row -> isLive (questionPoll row)
+policy IsPollOwnerQ = \user row -> isPollOwner (entityKey user) (questionPoll row)
+policy IsLiveA = \row -> isLive (answerPoll row)
+policy IsPollOwnerA = \user row -> isPollOwner (entityKey user) (answerPoll row)
