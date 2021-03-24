@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en-US">
+    <head>
+        <title>Storm Conference Manager</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div style="text-align: center;">
+            <h1>Tired of conference managers leaking your results to the competition?</h1>
+            <h2>Welcome to the Storm Conference Manager</h2>
+            <h1>No leaks. Guaranteed!</h1>
+            <br/>
+            <br/>
+            <h1>{{title}}</h1>
+            {{#papers}}
+            <a href="{{prefix}}/paper/{{paperId}}">#{{paperId}} {{title}}</a>
+            <br/>
+            {{/papers}}
+            <br/>
+            <a href="/paper">Add new paper</a>
+        </div>
+    </body>
+</html>

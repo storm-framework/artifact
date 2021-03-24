@@ -1,0 +1,60 @@
+library:
+  source-dirs: src
+  ghc-options: -fplugin=LiquidHaskell
+
+tests:
+  conf-test:
+    source-dirs: test
+    main: Spec.hs
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - conf
+copyright: 2019 Nico Lehmann
+maintainer: nlehmann@eng.ucsd.edu
+dependencies:
+  #- base >= 4.7 && < 5
+  - base64-bytestring
+  - bytestring
+  - either
+  - frankie
+  - storm
+  - mtl
+  - mustache
+  - persistent
+  - persistent-template
+  - persistent-sqlite
+  - monad-control
+  - monad-logger
+  - resource-pool
+  - text
+  - transformers
+  - transformers-base
+  - unordered-containers
+  - wai
+  - wai-extra
+  - warp
+  - liquid-base
+  - liquidhaskell >= 0.8.10
+
+name: conf
+version: 0.1.0.0
+extra-source-files:
+  - README.md
+  - ChangeLog.md
+author: Nico Lehmann
+github: nilehmann/conf
+license: BSD3
+executables:
+  conf-exe:
+    source-dirs: app
+    main: Main.hs
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - conf
+description: Please see the README on GitHub at <https://github.com/nilehmann/conf#readme>

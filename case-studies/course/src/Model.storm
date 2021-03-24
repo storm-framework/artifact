@@ -1,0 +1,59 @@
+import Data.Text ( Text )
+
+predicate isInstructor :: UserId -> CourseId -> Bool
+predicate isEnrolled   :: UserId -> CourseId -> Bool
+
+User
+  username Text
+  email Text @IsSelf
+  name Text
+  role String
+
+Course
+  name Text
+
+CourseInstructor
+  course CourseId
+  instructor UserId
+
+  assert { isInstructor instructor course }
+
+Enrollment
+  student UserId
+  course CourseId
+  grade String
+
+  read [ grade ] @StudentOrInstructor
+
+  assert { isEnrolled student course }
+
+Assignment
+  name Text
+  course CourseId
+  description Text
+
+  read [ description ] @EnrolledOrInstructor
+
+Submission
+  assignment AssignmentId
+  author UserId
+  content Text
+  grade String
+
+  read [ content, grade ] @AuthorOrInstructor
+
+policy IsSelf = \user viewer -> entityKey user == entityKey viewer
+
+policy StudentOrInstructor = \enrollment viewer ->
+  entityKey viewer == enrollmentStudent enrollment ||
+  isInstructor (entityKey viewer) (enrollmentCourse enrollment)
+
+policy EnrolledOrInstructor = \assignment viewer ->
+  isEnrolled (entityKey viewer) (assignmentCourse assignment) ||
+  isInstructor (entityKey viewer) (assignmentCourse assignment)
+
+policy AuthorOrInstructor = \submission viewer ->
+  submissionAuthor submission == entityKey viewer ||
+  isInstructor
+    (entityKey viewer)
+    (assignmentCourse (getJust (submissionAssignment submission)))

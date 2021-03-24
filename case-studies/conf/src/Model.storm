@@ -1,0 +1,113 @@
+import Data.Text (Text)
+import Stage
+
+predicate isAuthor   :: UserId -> PaperId -> Bool
+predicate isAccepted :: PaperId -> Bool
+predicate isReviewer :: UserId -> PaperId -> Bool
+
+User
+  username Text
+  name Text
+  email Text @ChairOrSelf
+  affiliation Text
+  level String
+
+Paper
+  author UserId
+  title Text
+  abstract Text
+  accepted Bool
+
+  assert {isAuthor author entityKey}
+  assert {accepted => isAccepted entityKey}
+
+  read [ author, title, abstract ] @PcOrAuthorOrAccepted
+
+  read [ accepted ] @PcOrPublic
+
+  insert {\paper viewer ->
+    paperAuthor paper == entityKey viewer &&
+    paperAccepted paper == False &&
+    currentStage == "submit"
+  }
+
+  update [ title, abstract ] {\old new viewer ->
+    entityKey viewer == paperAuthor old && currentStage == "submit"
+  }
+
+  update [ accepted ] {\old new viewer ->
+    IsChair viewer && currentStage == "review"
+  }
+
+  update [ author ] {\old new viewer -> False}
+
+ReviewAssignment
+  paper PaperId
+  user UserId
+  assignType Text
+
+  assert {isReviewer user paper}
+
+  read [ paper, user, assignType ] @OnlyPc
+
+  insert {\row viewer ->
+    IsChair viewer &&
+    IsPc (getJust (reviewAssignmentUser row)) &&
+    currentStage == "review"
+  }
+
+  update [ paper, user, assignType ] {\old new viewer -> False}
+
+Review
+  paper PaperId
+  reviewer UserId
+  content Text
+  score Int
+
+  read [ paper, content, score ] @PcOrAuthorIfPublic
+  read [ reviewer ] @OnlyPc
+
+  insert {\review viewer ->
+    currentStage == "review" &&
+    reviewReviewer review == entityKey viewer &&
+    isReviewer (entityKey viewer) (reviewPaper review)
+  }
+
+  update [ paper, content, score ] {\old new viewer ->
+    isReviewer (entityKey viewer) (reviewPaper old) && currentStage == "review"
+  }
+
+  update [ reviewer ] {\old new viewer -> False}
+
+
+PaperCoauthor
+  paper PaperId @PcOrAuthorOrAccepted'
+  author Text   @PcOrAuthorOrAccepted'
+
+policy IsChair = \user -> userLevel user == "chair"
+
+policy IsPc = \user -> userLevel user == "pc" || userLevel user == "chair"
+
+policy ChairOrSelf = \user viewer ->
+  IsChair viewer || entityKey viewer == entityKey user
+
+policy PcOrPublic = \row viewer ->
+  IsPc viewer || currentStage == "public"
+
+policy PcOrAuthorOrAccepted = \paper viewer ->
+  IsPc viewer ||
+  isAuthor (entityKey viewer) (entityKey paper) ||
+  (currentStage == "public" && paperAccepted paper)
+
+policy PcOrAuthorOrAccepted' = \coauthor viewer ->
+  IsPc viewer ||
+  isAuthor (entityKey viewer) (paperCoauthorPaper coauthor) ||
+  (currentStage == "public" && isAccepted (paperCoauthorPaper coauthor))
+
+policy OnlyPc = \row viewer -> IsPc viewer
+
+policy PcOrAuthorIfPublic = \review viewer ->
+    IsPc viewer ||
+    (currentStage == "public" &&
+      isAuthor (entityKey viewer) (reviewPaper review))
+

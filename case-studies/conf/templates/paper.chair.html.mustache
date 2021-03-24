@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-US">
+    <head>
+        <title>Storm Conference Manager</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div style="text-align: center;">
+            <h1>{{title}}</h1>
+            {{#authors}}
+            <div>{{.}}</div>
+            {{/authors}}
+            <p>{{abstract}}</p>
+
+            <form action="{{action}}" method="POST">
+                <select name="reviewer">
+                    {{#pcs}}
+                    <option value={{id}}>{{name}}</option>
+                    {{/pcs}}
+                </select>
+                <input type="submit" value="Assign"/>
+            </form>
+            {{#reviews}}
+            <h1>Reviewers</h1>
+                {{#reviews}}
+                <span>{{reviewer}}</span>
+                {{/reviews}}
+            {{/reviews}}
+        </div>
+    </body>
+</html>

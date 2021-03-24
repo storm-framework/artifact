@@ -1,0 +1,135 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 644961a9659c834dfb459414254352f6e9218c18e44b9a8dcb9a2089d1e7de5c
+
+name:           conf
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/nilehmann/conf#readme>
+homepage:       https://github.com/nilehmann/conf#readme
+bug-reports:    https://github.com/nilehmann/conf/issues
+author:         Nico Lehmann
+maintainer:     nlehmann@eng.ucsd.edu
+copyright:      2019 Nico Lehmann
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/nilehmann/conf
+
+library
+  exposed-modules:
+      Controllers
+      Controllers.Home
+      Controllers.Paper
+      Controllers.PaperIndex
+      Controllers.ProfileShow
+      Controllers.Review
+      Helpers
+      Model
+      Server
+      Stage
+  other-modules:
+      Paths_conf
+  hs-source-dirs:
+      src
+  ghc-options: -fplugin=LiquidHaskell
+  build-depends:
+      base64-bytestring
+    , bytestring
+    , either
+    , frankie
+    , liquid-base
+    , liquidhaskell >=0.8.10
+    , monad-control
+    , monad-logger
+    , mtl
+    , mustache
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , resource-pool
+    , storm
+    , text
+    , transformers
+    , transformers-base
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+executable conf-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_conf
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base64-bytestring
+    , bytestring
+    , conf
+    , either
+    , frankie
+    , liquid-base
+    , liquidhaskell >=0.8.10
+    , monad-control
+    , monad-logger
+    , mtl
+    , mustache
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , resource-pool
+    , storm
+    , text
+    , transformers
+    , transformers-base
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+test-suite conf-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_conf
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base64-bytestring
+    , bytestring
+    , conf
+    , either
+    , frankie
+    , liquid-base
+    , liquidhaskell >=0.8.10
+    , monad-control
+    , monad-logger
+    , mtl
+    , mustache
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , resource-pool
+    , storm
+    , text
+    , transformers
+    , transformers-base
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010

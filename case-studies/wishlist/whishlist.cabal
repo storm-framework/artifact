@@ -1,0 +1,120 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 5f32c6f5dd865374303c4e71d964027b63f1680da2d3ab6a575b577ec610044a
+
+name:           whishlist
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/nilehmann/whishlist#readme>
+homepage:       https://github.com/nilehmann/whishlist#readme
+bug-reports:    https://github.com/nilehmann/whishlist/issues
+author:         Nico Lehmann
+maintainer:     nlehmann@eng.ucsd.edu
+copyright:      2019 Nico Lehmann
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/nilehmann/whishlist
+
+library
+  exposed-modules:
+      Controllers
+      Controllers.User
+      Controllers.Wish
+      Helpers
+      Lib
+      Model
+      Server
+  other-modules:
+      Paths_whishlist
+  hs-source-dirs:
+      src
+  ghc-options: -fplugin=LiquidHaskell
+  build-depends:
+      base64-bytestring
+    , storm
+    , bytestring
+    , either
+    , frankie
+    , liquid-base
+    , liquidhaskell
+    , mtl
+    , mustache
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , text
+    , transformers
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+  default-language: Haskell2010
+
+executable whishlist-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_whishlist
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base64-bytestring
+    , storm
+    , bytestring
+    , either
+    , frankie
+    , liquid-base
+    , liquidhaskell
+    , mtl
+    , mustache
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , text
+    , transformers
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+    , whishlist
+  default-language: Haskell2010
+
+test-suite whishlist-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_whishlist
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base64-bytestring
+    , storm
+    , bytestring
+    , either
+    , frankie
+    , liquid-base
+    , liquidhaskell
+    , mtl
+    , mustache
+    , persistent
+    , persistent-sqlite
+    , persistent-template
+    , text
+    , transformers
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+    , whishlist
+  default-language: Haskell2010
