@@ -1,12 +1,14 @@
 """
 LOC count
 """
-from typing import List, Tuple
-from collections import Counter
+import json
 import re
-from pathlib import Path
-import os
+import shutil
+import subprocess
 import sys
+from collections import Counter
+from pathlib import Path
+from typing import List, Tuple
 
 
 def count_model_loc(lines: List[str]) -> Tuple[int, int]:
@@ -143,6 +145,24 @@ def haskell_loc(directory: Path) -> Counter[str]:
     return total_count
 
 
+def client_loc(directory: Path) -> int:
+    res = subprocess.run(['tokei', '-t', 'Vue,Javascript,TypeScript',
+                          '-o', 'json', str(directory)], capture_output=True)
+    output = json.loads(res.stdout)
+    javascript = output.get('JavaScript', {}).get('code', 0)
+    typescript = output.get('TypeScript', {}).get('code', 0)
+
+    vue = output.get('Vue', {}).get('children', {})
+    vue_css = sum(child.get('stats', {}).get('code', 0)
+                  for child in vue.get('Css', []))
+    vue_html = sum(child.get('stats', {}).get('code', 0)
+                   for child in vue.get('Html', []))
+    vue_javascript = sum(child.get('stats', {}).get('code', 0)
+                         for child in vue.get('JavaScript', []))
+    # return javascript + typescript + vue_html + vue_css + vue_javascript
+    return javascript + typescript + vue_javascript
+
+
 def print_table(table: List[List[str]]):
     col_widths = [0] * len(table[0])
     for row in table:
@@ -150,27 +170,51 @@ def print_table(table: List[List[str]]):
             col_widths[i] = max(col_widths[i], len(col))
     sep = 2
     for i, row in enumerate(table):
-        for width, col in zip(col_widths, row):
+        for j, col in enumerate(row):
+            width = col_widths[j]
             padding = width - len(col)
-            sys.stdout.write(col + " " * padding)
+            if j > 0:
+                sys.stdout.write(" " * padding)
+            sys.stdout.write(col)
+            if j == 0:
+                sys.stdout.write(" " * padding)
             sys.stdout.write(" " * sep)
         sys.stdout.write("\n")
-        if i == 0:
+        if i == 0 or i == len(table) - 1:
             sys.stdout.write("-" * (sum(col_widths) + sep * len(col_widths) - sep))
             sys.stdout.write("\n")
 
 
 if __name__ == "__main__":
-    apps = {"Conference": Path("case-studies", "conf"), "Course": Path("case-studies", "course"),
-            "WishList": Path("case-studies", "wishlist"), "Vontron": Path("voltron", "server"), "Disco": Path("disco", "server")}
-    # apps = {"Disco": Path("disco", "server")}
-    # apps = {"WishList": Path("case-studies", "wishlist")}
+    case_studies = {"Conference": Path("case-studies", "conf"), "Course": Path(
+        "case-studies", "course"), "WishList": Path("case-studies", "wishlist")}
+    apps = {"Voltron": Path("voltron"), "Disco": Path("disco")}
 
-    table = [["App", "Server", "Models", "Policy", "Annot."]]
-    for name, directory in apps.items():
+    has_tokei = shutil.which('tokei') is not None
+
+    table = [["App", "Server", "Models", "Policy", "Client", "Annot."]]
+
+    for name, directory in case_studies.items():
         model = model_file_loc(Path(directory, "src", "Model.storm"))
         haskell = haskell_loc(directory)
         table.append([name, str(haskell["code_loc"]),
                       str(model["model_loc"]), str(model["policy_loc"]),
+                      "-",
+                      f"{haskell['annot_loc']} ({haskell['non_trivial_loc']})"])
+
+    for name, directory in apps.items():
+        model = model_file_loc(Path(directory, "server", "src", "Model.storm"))
+        haskell = haskell_loc(Path(directory, "server"))
+        if has_tokei:
+            client = str(client_loc(Path(directory, 'client')))
+        else:
+            client = "-"
+        table.append([name, str(haskell["code_loc"]),
+                      str(model["model_loc"]), str(model["policy_loc"]),
+                      client,
                       f"{haskell['annot_loc']} ({haskell['non_trivial_loc']})"])
     print_table(table)
+
+    if has_tokei:
+        print()
+        print("Warning: `tokei` is required to count client code")
