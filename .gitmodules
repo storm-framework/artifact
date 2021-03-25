@@ -3,7 +3,7 @@
 	url = https://github.com/storm-framework/core.git
 [submodule "disco"]
 	path = disco
-	url = git@github.com:binah-framework/disco
+	url = https://github.com/storm-framework/disco.git
 [submodule "voltron"]
 	path = voltron
-	url = git@github.com:binah-framework/voltron
+	url = https://github.com/storm-framework/voltron.git
