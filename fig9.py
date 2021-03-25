@@ -1,14 +1,12 @@
-"""
-LOC count
-"""
+#!/usr/bin/env python3
+
 import json
 import re
 import shutil
 import subprocess
 import sys
-from collections import Counter
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Counter
 
 
 def count_model_loc(lines: List[str]) -> Tuple[int, int]:
@@ -215,6 +213,6 @@ if __name__ == "__main__":
                       f"{haskell['annot_loc']} ({haskell['non_trivial_loc']})"])
     print_table(table)
 
-    if has_tokei:
+    if not has_tokei:
         print()
         print("Warning: `tokei` is required to count client code")
