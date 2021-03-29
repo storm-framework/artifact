@@ -25,16 +25,16 @@ It is only necessary to move the `z3` binary to somewhere in the path.
 
 Clone this repo recursively.
 
-```
-git clone --recursive https://github.com/storm-framework/artifact
+```bash
+$ git clone --recursive https://github.com/storm-framework/artifact
 ```
 
 ### Building the Code
 
 
-```
-cd case-studies/wishlist
-stack build --fast
+```bash
+$ cd case-studies/wishlist
+$ stack build --fast
 ```
 
 This will build and verify the code for the WishList application along with its dependencies.
@@ -86,50 +86,18 @@ is working:
 - Disco: http://34.72.16.85:8080
 - Voltron: http://34.72.16.85:9090
 
-## Structure
+## Detailed Instructions
 
-- [`storm-core`](storm-core/) — Formalization of Storm's core API as described in Section 6 of the paper.
-- [`models`](models/) — Policies ported to evaluate expressiveness as described in Section 7.1.
-- [`case-studies`](case-studies/) — Case studies to evaluate burden Storms's puts on the programmer as described in Section 7.2 of the paper.
-- [`voltron`](voltron/) — The repository hosting the Voltron app described in Section 7.3. This is further divided in [`client`](voltron/client) and [`server`](voltron/server) code.
-- [`disco`](disco/) — The repository hosting the Disco app described in Section 7.3. The repo is further divided in [`client`](disco/client) and [`server`](disco/server) code.
+The following assumes the steps in [Installing Prerequisites](#installing-prerequisites) and
+[Getting the code](#getting-the-code) have been completed.
 
-## TODO / Contents
+### Core (Section 6)
 
-### Proof
-
-- [x] **S6** Core
-
-- [ ] **S7.1** Ported policies (ur, hails etc)
-	- [ ] Script to generate table 1 (policies)
-
-- [ ] **S7.2** Ported apps
-	- how to build
-	- how to edit to break some policy
-
-- [ ] **S7.3**
-	- Voltron
-	  - how to build
-	  - how to edit to break some policy
-	  - how to run
-
-	- [ ] Disco
-	  - how to build
-	  - how to edit to break some policy
-	  - how to run
-
-- [x] Scripts to generate Figure 9 (annotations)
+The code in [`storm-core`](storm-core/) contains the formalization of Storm's core API as described in Section 6 of the paper.
+To verify do:
 
 
-### Packaging
-
-- [X] Docker or VM? We are giving them access to a server.
-
-## Core (Section 6)
-
-Do this
-
-```
+```bash
 $ cd storm-core
 $ stack build --fast
 ```
@@ -170,3 +138,115 @@ rjhala@khao-soi ~/r/storm-core (master)> stack build --fast
 [9 of 9] Compiling Storm2
 **** LIQUID: SAFE (82 constraints checked) *************************************
 ```
+
+### Policies (Section 7.1)
+
+The code in [`models/`](models/) contains the policies ported to evaluate expressiveness as described in Section 7.1.
+As described in the paper this directory does not contain verifiable code, but only ported models files.
+The models files are grouped by the original tool they were taken from, e.g., the
+models file for the Calendar application in UrWeb is in [`models/src/UrWeb/Calendar/Model.storm`](models/src/UrWeb/Calendar/Model.storm).
+
+### Case Studies (Section 7.2)
+
+The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2
+can be found [here](case-studies/).
+To verify an application go to the corresponding directory and build the project with `stack build --fast`, e.g., to
+verify the Conference Manager do:
+
+```bash
+$ cd case-studies/course
+$ stack build --fast
+```
+
+You should see output like this (after compiling the dependencies):
+
+```
+Building library for course-0.1.0.0..
+[1 of 8] Compiling Lib
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[2 of 8] Compiling Model
+
+**** DONE:  Only compiling specifications [skipping verification] **************
+
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[3 of 8] Compiling Helpers
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[4 of 8] Compiling Controllers
+
+**** LIQUID: SAFE (20 constraints checked) *************************************
+[5 of 8] Compiling Controllers.SubmissionShow
+
+**** LIQUID: SAFE (484 constraints checked) ************************************
+[6 of 8] Compiling Controllers.CourseIndex
+
+**** LIQUID: SAFE (260 constraints checked) ************************************
+[7 of 8] Compiling Controllers.AssignmentShow
+
+**** LIQUID: SAFE (167 constraints checked) ************************************
+[8 of 8] Compiling Paths_course
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+
+```
+
+### Figure 9
+
+To produce the count of lines of code in Figure 9. do:
+
+```bash
+$ python3 fig9.py
+```
+
+
+### Disco
+
+- Verify Disco's server code:
+```bash
+$ cd disco
+$ stack build --fast
+```
+
+
+
+
+## Structure
+
+- [`storm-core`](storm-core/) — Formalization of Storm's core API as described in Section 6 of the paper.
+- [`models`](models/) — Policies ported to evaluate expressiveness as described in Section 7.1.
+- [`voltron`](voltron/) — The repository hosting the Voltron app described in Section 7.3. This is further divided in [`client`](voltron/client) and [`server`](voltron/server) code.
+- [`disco`](disco/) — The repository hosting the Disco app described in Section 7.3. The repo is further divided in [`client`](disco/client) and [`server`](disco/server) code.
+
+## TODO / Contents
+
+### Proof
+
+- [x] **S6** Core
+
+- [ ] **S7.1** Ported policies (ur, hails etc)
+	- [ ] Script to generate table 1 (policies)
+
+- [ ] **S7.2** Ported apps
+	- how to build
+	- how to edit to break some policy
+
+- [ ] **S7.3**
+	- Voltron
+	  - how to build
+	  - how to edit to break some policy
+	  - how to run
+
+	- [ ] Disco
+	  - how to build
+	  - how to edit to break some policy
+	  - how to run
+
+- [x] Scripts to generate Figure 9 (annotations)
+
+
+### Packaging
+
+- [X] Docker or VM? We are giving them access to a server.
+
