@@ -72,38 +72,54 @@ $ cd case-studies/wishlist
 $ stack build --fast
 ```
 
-You should see output like this (after compiling the dependencies):
+### Breaking the Code
+
+Open the file [case-studies/wishlist/src/Controllers/Wish.hs](case-studies/wishlist/src/Controllers/Wish.hs).
+The function [`getWishData`](case-studies/wishlist/src/Controllers/Wish.hs#L156) at line 156 extracts
+the information out of a wish.
+The query [between lines 164 and 171](case-studies/wishlist/src/Controllers/Wish.hs#L156-171) checks
+if the viewer is friends with the owner of the wish.
+Remove the check `frienshipStatus ==. "accepted"` from the query, i.e., the query should look like:
+
+```haskell
+  friends  <- selectFirst
+    (   friendshipUser1'
+    ==. owner
+    &&: friendshipUser2'
+    ==. viewerId
+    )
+```
+
+Then verify the code again by running `stack build --fast`.
+Forgetting to check if the friendship status is `"accepted"` reports a possible leak because the
+viewer may not be owner with the owner of the wish.
+You should see an error like:
 
 ```
-Building library for course-0.1.0.0..
-[1 of 8] Compiling Lib
+[7 of 8] Compiling Controllers.Wish
 
-**** LIQUID: SAFE (0 constraints checked) **************************************
-[2 of 8] Compiling Model
+**** LIQUID: UNSAFE ************************************************************
 
-**** DONE:  Only compiling specifications [skipping verification] **************
-
-
-**** LIQUID: SAFE (0 constraints checked) **************************************
-[3 of 8] Compiling Helpers
-
-**** LIQUID: SAFE (0 constraints checked) **************************************
-[4 of 8] Compiling Controllers
-
-**** LIQUID: SAFE (20 constraints checked) *************************************
-[5 of 8] Compiling Controllers.SubmissionShow
-
-**** LIQUID: SAFE (484 constraints checked) ************************************
-[6 of 8] Compiling Controllers.CourseIndex
-
-**** LIQUID: SAFE (260 constraints checked) ************************************
-[7 of 8] Compiling Controllers.AssignmentShow
-
-**** LIQUID: SAFE (167 constraints checked) ************************************
-[8 of 8] Compiling Paths_course
-
-**** LIQUID: SAFE (0 constraints checked) **************************************
-
+/home/artifact/artifact/case-studies/wishlist/src/Controllers/Wish.hs:173:49: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (Database.Persist.Class.PersistEntity.Entity Model.User) | (GHC.Types.False => friendshipUser2Cap (getJust (entityKey v)))
+                                                                           && (GHC.Types.False => wishOwnerCap (getJust (entityKey VV)))
+                                                                           && (GHC.Types.False => friendshipUser1Cap (getJust (entityKey v)))
+                                                                           && v == getJust (entityKey v)}
+    .
+    is not a subtype of the required type
+      VV : {VV : (Database.Persist.Class.PersistEntity.Entity Model.User) | wishAccessLevel (entityVal (getJust (entityKey VV))) == "public"
+                                                                            || (wishOwner (entityVal (getJust (entityKey VV))) == entityKey VV
+                                                                                || (wishAccessLevel (entityVal (getJust (entityKey VV))) == "friends"
+                                                                                    && friends (wishOwner (entityVal (getJust (entityKey VV)))) (entityKey VV)))}
+    .
+    in the context
+      wishId : (Database.Persist.Class.PersistEntity.Key Model.Wish)
+    |
+173 |     (_, Just _) | level == "friends" -> project wishDescription' wish
+    |                                                 ^^^^^^^^^^^^^^^^
 ```
 
 ### Figure 9
