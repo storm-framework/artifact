@@ -62,11 +62,13 @@ models file for the Calendar application in UrWeb is in [`models/src/UrWeb/Calen
 
 The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2
 can be found [here](case-studies/).
-To verify an application go to the corresponding directory and build the project with `stack build --fast`, e.g., to
-verify the Conference Manager do:
+
+### Verify the Code
+
+To verify an application go to the corresponding directory and build the project with `stack build --fast`, e.g., to verify the WishList application:
 
 ```bash
-$ cd case-studies/course
+$ cd case-studies/wishlist
 $ stack build --fast
 ```
 
