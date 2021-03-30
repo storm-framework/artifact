@@ -115,7 +115,7 @@ $ python3 fig9.py
 
 ## Disco
 
-### Verify Code
+### Verify the Code
 
 To verify Disco's server code is leak free do:
 
@@ -124,7 +124,7 @@ $ cd disco
 $ stack build --fast
 ```
 
-### Break Code
+### Break the Code
 
 Open the file [disco/server/src/Controllers/Room](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs).
 The function [`updateTopic`](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L36) on line 36 is the
@@ -169,16 +169,29 @@ You should see an output like:
    |                       ^^^^^^^^^
 ```
 
+### Run the Code
+
+We have a running instance of Disco at [http://34.72.16.85:8080](http://34.72.16.85:8080).
+We included credentials to log in into the site in the artifact submission page.
+To test the Disco:
+
+1. Log in with the organizer account. This account has administration capabilities.
+1. Go to `Admin -> Manage Rooms` at the top right.
+1. Create a couple of rooms. You can change the color, name, topic and capacity. When you are ready, click on save.
+1. In a different browser or in an incognito window log in with the attendee account.
+1. You should see the organizer user in the Lobby.
+1. Try joining different rooms with both users. The interface should show which room the other user is currently in.
+
 ## Voltron
 
-### Verify Code
+### Verify the Code
 
 ```bash
 $ cd voltron
 $ stack build --fast
 ```
 
-### Break Code
+### Break the Code
 
 Open the file [voltron/server/src/Controllers/Class.hs](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs).
 The function [`addRoster`](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L102) at line 102 is
@@ -213,3 +226,12 @@ You should see the following error:
    |                         ^^^^^^^^^^^^^^^^
 
 ```
+### Run the Code
+
+We have a running instance of Voltron at [http://34.72.16.85:9090](http://34.72.16.85:9090).
+We included credentials to log in into the site in the artifact submission page.
+There are 5 account: 1 instructor account and 4 students account.
+The students accounts are divided into 2 groups of 2 students each.
+If logged in with the instructor account you should see a _buffer_ for each of the two groups.
+When logged in with a student account, you should only see the buffer for the student's group.
+
