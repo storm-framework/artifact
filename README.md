@@ -209,17 +209,75 @@ $ cd disco
 $ stack build --fast
 ```
 
+- Change this [line of code](disco/server/src/Controllers/Room.hs#L39) to:
+
+```haskell
+Just roomId ->
+
+```
+
+and run `stack build --fast` again.
+This should replicate the subtle information flow error in the discussion of Section 7.3.
+You should get an error like this informing there is a possible leak when accessing which room
+the user is currently in.
 
 
+```
+**** LIQUID: UNSAFE ************************************************************
+/home/artifact/artifact/disco/server/src/Controllers/Room.hs:39:23: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (Database.Persist.Class.PersistEntity.Entity Model.User) | v == getJust (entityKey v)}
+    .
+    is not a subtype of the required type
+      VV : {VV : (Database.Persist.Class.PersistEntity.Entity Model.User) | userVisibility (entityVal (getJust (entityKey VV))) == "public"
+                                                                            || getJust (entityKey VV) == VV}
+    .
+   |
+39 |   userRoom <- project userRoom' viewer
+   |                       ^^^^^^^^^
+```
 
-## Structure
+### Voltron
 
-- [`storm-core`](storm-core/) — Formalization of Storm's core API as described in Section 6 of the paper.
-- [`models`](models/) — Policies ported to evaluate expressiveness as described in Section 7.1.
-- [`voltron`](voltron/) — The repository hosting the Voltron app described in Section 7.3. This is further divided in [`client`](voltron/client) and [`server`](voltron/server) code.
-- [`disco`](disco/) — The repository hosting the Disco app described in Section 7.3. The repo is further divided in [`client`](disco/client) and [`server`](disco/server) code.
+- To verify Voltron's server code:
 
-## TODO / Contents
+```bash
+$ cd disco
+$ stack build --fast
+```
+
+- Change [this line](voltron/server/src/Controllers/Class.hs#L63) to be:
+
+```haskell
+                         (className' ==. cliClass)
+```
+
+Forgetting to check the user is the instructor of the class should produce an error stating
+that the user does not have enough permissions for the operation.
+You should see the following error:
+
+```
+[ 9 of 11] Compiling Controllers.Class
+
+**** LIQUID: UNSAFE ************************************************************
+
+/home/artifact/artifact/voltron/server/src/Controllers/Class.hs:64:25: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (Database.Persist.Class.PersistEntity.Entity Model.Class) | isInstructor (entityKey v) (classInstructor (entityVal v))
+                                                                            && v == getJust (entityKey v)}
+    .
+    is not a subtype of the required type
+      VV : {VV : (Database.Persist.Class.PersistEntity.Entity Model.Class) | classEditorLangCap VV}
+    .
+   |
+63 |                        (classEditorLang' `assign` cliLanguage)
+   |                         ^^^^^^^^^^^^^^^^
+
+```
 
 ### Proof
 
