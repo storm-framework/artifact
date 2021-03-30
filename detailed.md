@@ -1,0 +1,192 @@
+# Detailed Instructions
+
+The following assumes the steps in [Installing Prerequisites](getting-started.md#installing-prerequisites) and
+[Getting the code](#getting-the-code) have been completed.
+
+## Core (Section 6)
+
+The code in [`storm-core`](storm-core/) contains the formalization of Storm's core API as described in Section 6 of the paper.
+To verify do:
+
+
+```bash
+$ cd storm-core
+$ stack build --fast
+```
+
+You should see something like
+
+```
+rjhala@khao-soi ~/r/storm-core (master)> stack build --fast
+
+.
+.
+.
+
+[1 of 9] Compiling Labels
+**** LIQUID: SAFE (6 constraints checked) **************************************
+
+[2 of 9] Compiling LIO
+**** LIQUID: SAFE (15 constraints checked) *************************************
+
+[3 of 9] Compiling LIOCombinators
+**** LIQUID: SAFE (99 constraints checked) *************************************
+
+[4 of 9] Compiling Lifty
+**** LIQUID: SAFE (135 constraints checked) ************************************
+
+[5 of 9] Compiling Paths_storm_core
+**** LIQUID: SAFE (0 constraints checked) **************************************
+
+[6 of 9] Compiling ProofCombinators
+**** LIQUID: SAFE (1 constraints checked) **************************************
+
+[7 of 9] Compiling Rows
+**** LIQUID: SAFE (0 constraints checked) **************************************
+
+[8 of 9] Compiling Storm
+**** LIQUID: SAFE (70 constraints checked) *************************************
+
+[9 of 9] Compiling Storm2
+**** LIQUID: SAFE (82 constraints checked) *************************************
+```
+
+## Policies (Section 7.1)
+
+The code in [`models/`](models/) contains the policies ported to evaluate expressiveness as described in Section 7.1.
+This directory does not contain verifiable code, only the ported models files.
+The models files are grouped by the original tool they were taken from, e.g., the
+models file for the Calendar application in UrWeb is in [`models/src/UrWeb/Calendar/Model.storm`](models/src/UrWeb/Calendar/Model.storm).
+
+## Case Studies (Section 7.2)
+
+The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2
+can be found [here](case-studies/).
+To verify an application go to the corresponding directory and build the project with `stack build --fast`, e.g., to
+verify the Conference Manager do:
+
+```bash
+$ cd case-studies/course
+$ stack build --fast
+```
+
+You should see output like this (after compiling the dependencies):
+
+```
+Building library for course-0.1.0.0..
+[1 of 8] Compiling Lib
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[2 of 8] Compiling Model
+
+**** DONE:  Only compiling specifications [skipping verification] **************
+
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[3 of 8] Compiling Helpers
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[4 of 8] Compiling Controllers
+
+**** LIQUID: SAFE (20 constraints checked) *************************************
+[5 of 8] Compiling Controllers.SubmissionShow
+
+**** LIQUID: SAFE (484 constraints checked) ************************************
+[6 of 8] Compiling Controllers.CourseIndex
+
+**** LIQUID: SAFE (260 constraints checked) ************************************
+[7 of 8] Compiling Controllers.AssignmentShow
+
+**** LIQUID: SAFE (167 constraints checked) ************************************
+[8 of 8] Compiling Paths_course
+
+**** LIQUID: SAFE (0 constraints checked) **************************************
+
+```
+
+## Figure 9
+
+To produce the count of lines of code in Figure 9. do:
+
+```bash
+$ python3 fig9.py
+```
+
+
+## Disco
+
+- Verify Disco's server code:
+```bash
+$ cd disco
+$ stack build --fast
+```
+
+- Change this [line of code](disco/server/src/Controllers/Room.hs#L39) to:
+
+```haskell
+Just roomId ->
+
+```
+
+and run `stack build --fast` again.
+This should replicate the subtle information flow error in the discussion of Section 7.3.
+You should get an error like this informing there is a possible leak when accessing which room
+the user is currently in.
+
+
+```
+**** LIQUID: UNSAFE ************************************************************
+/home/artifact/artifact/disco/server/src/Controllers/Room.hs:39:23: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (Database.Persist.Class.PersistEntity.Entity Model.User) | v == getJust (entityKey v)}
+    .
+    is not a subtype of the required type
+      VV : {VV : (Database.Persist.Class.PersistEntity.Entity Model.User) | userVisibility (entityVal (getJust (entityKey VV))) == "public"
+                                                                            || getJust (entityKey VV) == VV}
+    .
+   |
+39 |   userRoom <- project userRoom' viewer
+   |                       ^^^^^^^^^
+```
+
+## Voltron
+
+- To verify Voltron's server code:
+
+```bash
+$ cd disco
+$ stack build --fast
+```
+
+- Change [this line](voltron/server/src/Controllers/Class.hs#L63) to be:
+
+```haskell
+(className' ==. cliClass)
+```
+
+Forgetting to check the user is the instructor of the class should produce an error stating
+that the user does not have enough permissions for the operation.
+You should see the following error:
+
+```
+[ 9 of 11] Compiling Controllers.Class
+
+**** LIQUID: UNSAFE ************************************************************
+
+/home/artifact/artifact/voltron/server/src/Controllers/Class.hs:64:25: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (Database.Persist.Class.PersistEntity.Entity Model.Class) | isInstructor (entityKey v) (classInstructor (entityVal v))
+                                                                            && v == getJust (entityKey v)}
+    .
+    is not a subtype of the required type
+      VV : {VV : (Database.Persist.Class.PersistEntity.Entity Model.Class) | classEditorLangCap VV}
+    .
+   |
+63 |                        (classEditorLang' `assign` cliLanguage)
+   |                         ^^^^^^^^^^^^^^^^
+
+```
