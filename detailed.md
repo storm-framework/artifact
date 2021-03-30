@@ -1,7 +1,7 @@
 # Detailed Instructions
 
 The following assumes the steps in [Installing Prerequisites](getting-started.md#installing-prerequisites) and
-[Getting the code](#getting-the-code) have been completed.
+[Getting the code](getting-started.md#getting-the-code) have been completed.
 
 ## Core (Section 6)
 
@@ -104,7 +104,7 @@ Building library for course-0.1.0.0..
 
 ```
 
-## Figure 9
+### Figure 9
 
 To produce the count of lines of code in Figure 9. do:
 
@@ -115,23 +115,41 @@ $ python3 fig9.py
 
 ## Disco
 
-- Verify Disco's server code:
+### Verify Code
+
+To verify Disco's server code is leak free do:
+
 ```bash
 $ cd disco
 $ stack build --fast
 ```
 
-- Change this [line of code](disco/server/src/Controllers/Room.hs#L39) to:
+### Break Code
+
+Open the file [disco/server/src/Controllers/Room](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs).
+The function [`updateTopic`](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L36) on line 36 is the
+controller that allows a user to update a room's topic which contained the subtle information flow bug
+described in the discussion of Section 7.3.
+In [line 42](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L42) it checks that the users' visibility is set to `"public"` and only then
+allows them to update the topic.
+
+Update [lines 42 to 50](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L42-50) to be
 
 ```haskell
-Just roomId ->
-
+    Just roomId -> do
+      UpdateTopicReq {..} <- decodeBody
+      validateTopic updateTopicReqTopic
+      _ <- updateWhere (roomId' ==. roomId) (roomTopic' `assign` updateTopicReqTopic)
+      room                <- selectFirstOr notFoundJSON (roomId' ==. roomId)
+      roomData            <- extractRoomData room
+      respondJSON status200 roomData
+    Nothing -> respondError status403 Nothing
 ```
 
-and run `stack build --fast` again.
-This should replicate the subtle information flow error in the discussion of Section 7.3.
-You should get an error like this informing there is a possible leak when accessing which room
-the user is currently in.
+and then run `stack build --fast` again.
+Forgetting to check if the visibility is set to public produces an error when accessing
+the user's current room as the information may be leaked.
+You should see an output like:
 
 
 ```
@@ -153,21 +171,26 @@ the user is currently in.
 
 ## Voltron
 
-- To verify Voltron's server code:
+### Verify Code
 
 ```bash
-$ cd disco
+$ cd voltron
 $ stack build --fast
 ```
 
-- Change [this line](voltron/server/src/Controllers/Class.hs#L63) to be:
+### Break Code
+
+Open the file [voltron/server/src/Controllers/Class.hs](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs).
+The function [`addRoster`](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L102) at line 102 is
+the controller that allows an instructor to enroll a list of students to a class.
+The [query at line 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L110) checks that the current user is the instructor of the class.
+By removing the clause `&&: classInstructor' ==. instrId`, i.e., so the line reads:
 
 ```haskell
-(className' ==. cliClass)
+                         (className' ==. rosterClass)
 ```
 
-Forgetting to check the user is the instructor of the class should produce an error stating
-that the user does not have enough permissions for the operation.
+should produce an error stating that the user does not have enough permissions for the operation.
 You should see the following error:
 
 ```
