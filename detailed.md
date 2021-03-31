@@ -81,7 +81,7 @@ $ stack build --fast
 Open the file [case-studies/wishlist/src/Controllers/Wish.hs](case-studies/wishlist/src/Controllers/Wish.hs).
 The function [`getWishData`](case-studies/wishlist/src/Controllers/Wish.hs#L156) at line 156 extracts
 the information out of a wish.
-The query [between lines 164 and 171](case-studies/wishlist/src/Controllers/Wish.hs#L156-171) checks
+The query [between lines 164 and 171](case-studies/wishlist/src/Controllers/Wish.hs#L164-L171) checks
 if the viewer is friends with the owner of the wish.
 Remove the check `frienshipStatus ==. "accepted"` from the query, i.e., the query should look like:
 
@@ -155,7 +155,7 @@ discussion of Section 7.3.
 In [line 42](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L42) it checks that the users' visibility is set to `"public"` and only then
 allows them to update the topic.
 
-Update [lines 42 to 50](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L42-50) to be
+Update [lines 42 to 50](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L42-L50) to be
 
 ```haskell
     Just roomId -> do
@@ -218,8 +218,8 @@ $ stack build --fast
 Open the file [voltron/server/src/Controllers/Class.hs](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs).
 The function [`addRoster`](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L102) at line 102 implements
 the functionality to enroll a list of students to a class.
-This operation is restricted to instructors of the class which is checked by the [query at line 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L110).
-Removing the clause `&&: classInstructor' ==. instrId`, i.e., so the line reads:
+This operation is restricted to instructors of the class which is checked by the [query between lines 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L110).
+Removing the clause `classInstructor' ==. instrId`, i.e., so the line reads:
 
 ```haskell
                          (className' ==. rosterClass)
