@@ -6,9 +6,14 @@ and [obtained the code](getting-started.md#getting-the-code).
 
 ## Core (Section 6)
 
+<<<<<<< Updated upstream
 The code in [`storm-core`](storm-core/) contains the formalization 
 of `Storm`'s core API as described in Section 6 of the paper. 
 To verify do:
+=======
+The code in [`storm-core`](storm-core/) contains the formalization of Storm's core API as described in Section 6 of the paper.
+To verify the proof do:
+>>>>>>> Stashed changes
 
 
 ```bash
@@ -63,11 +68,17 @@ models file for the Calendar application in UrWeb is in [`models/src/UrWeb/Calen
 
 ## Case Studies (Section 7.2)
 
+<<<<<<< Updated upstream
 The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2 can be found [here](case-studies/).
+=======
+The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2
+can be found in [case-studies](case-studies/).
+There is one Haskell/Stack project for each case study.
+>>>>>>> Stashed changes
 
 ### Verify the Code
 
-To verify an application go to the corresponding directory and build the project with `stack build --fast`, e.g., to verify the WishList application:
+To verify one of the case studies go to the corresponding directory and build the project with `stack build --fast`, e.g., to verify the WishList application:
 
 ```bash
 $ cd case-studies/wishlist
@@ -94,7 +105,7 @@ Remove the check `frienshipStatus ==. "accepted"` from the query, i.e., the quer
 
 Then verify the code again by running `stack build --fast`.
 Forgetting to check if the friendship status is `"accepted"` reports a possible leak because the
-viewer may not be owner with the owner of the wish.
+viewer may not be friends with the owner of the wish.
 You should see an error like:
 
 ```
@@ -132,7 +143,6 @@ To produce the count of lines of code in Figure 9. do:
 $ python3 fig9.py
 ```
 
-
 ## Disco
 
 ### Verify the Code
@@ -140,16 +150,17 @@ $ python3 fig9.py
 To verify Disco's server code is leak free do:
 
 ```bash
-$ cd disco
+$ cd disco/server
 $ stack build --fast
 ```
 
 ### Break the Code
 
 Open the file [disco/server/src/Controllers/Room](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs).
-The function [`updateTopic`](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L36) on line 36 is the
-controller that allows a user to update a room's topic which contained the subtle information flow bug
-described in the discussion of Section 7.3.
+The function [`updateTopic`](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L36) on line 36 implements
+the functionality that allows a user to update a room's topic.
+If not done carefully, this operation may produce a subtle information flow bug as described in the
+discussion of Section 7.3.
 In [line 42](https://github.com/storm-framework/disco/blob/50d1ff79e76013fc6a018f3bea554508c60e06d8/server/src/Controllers/Room.hs#L42) it checks that the users' visibility is set to `"public"` and only then
 allows them to update the topic.
 
@@ -191,14 +202,14 @@ You should see an output like:
 
 ### Run the Code
 
-We have a running instance of Disco at [http://34.72.16.85:8080](http://34.72.16.85:8080).
-We included credentials to log in into the site in the artifact submission page.
+There is a running instance of Disco at [http://34.72.16.85:8080](http://34.72.16.85:8080).
+We included credentials to log in into the site in the `Bidding instructions/requirements` section of the artifact submission page.
 To test the Disco:
 
 1. Log in with the organizer account. This account has administration capabilities.
 1. Go to `Admin -> Manage Rooms` at the top right.
 1. Create a couple of rooms. You can change the color, name, topic and capacity. When you are ready, click on save.
-1. In a different browser or in an incognito window log in with the attendee account.
+1. In a different browser (or in an incognito window) log in with the attendee account.
 1. You should see the organizer user in the Lobby.
 1. Try joining different rooms with both users. The interface should show which room the other user is currently in.
 
@@ -207,17 +218,17 @@ To test the Disco:
 ### Verify the Code
 
 ```bash
-$ cd voltron
+$ cd voltron/server
 $ stack build --fast
 ```
 
 ### Break the Code
 
 Open the file [voltron/server/src/Controllers/Class.hs](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs).
-The function [`addRoster`](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L102) at line 102 is
-the controller that allows an instructor to enroll a list of students to a class.
-The [query at line 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L110) checks that the current user is the instructor of the class.
-By removing the clause `&&: classInstructor' ==. instrId`, i.e., so the line reads:
+The function [`addRoster`](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L102) at line 102 implements
+the functionality to enroll a list of students to a class.
+This operation is restricted to instructors of the class which is checked by the [query at line 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L110).
+Removing the clause `&&: classInstructor' ==. instrId`, i.e., so the line reads:
 
 ```haskell
                          (className' ==. rosterClass)
@@ -252,6 +263,6 @@ We have a running instance of Voltron at [http://34.72.16.85:9090](http://34.72.
 We included credentials to log in into the site in the artifact submission page.
 There are 5 account: 1 instructor account and 4 students account.
 The students accounts are divided into 2 groups of 2 students each.
-If logged in with the instructor account you should see a _buffer_ for each of the two groups.
-When logged in with a student account, you should only see the buffer for the student's group.
+If logged in with the instructor account, you should see a _buffer_ for each of the two groups.
+When logged in with a student account, you should only see the buffer for that student's group.
 
