@@ -1,19 +1,14 @@
 # Detailed Instructions
 
-The following assumes you have installed 
-the [prerequisites](getting-started.md#prerequisites) 
+The following assumes you have installed
+the [prerequisites](getting-started.md#prerequisites)
 and [obtained the code](getting-started.md#getting-the-code).
 
 ## Core (Section 6)
 
-<<<<<<< Updated upstream
-The code in [`storm-core`](storm-core/) contains the formalization 
-of `Storm`'s core API as described in Section 6 of the paper. 
+The code in [`storm-core`](storm-core/) contains the formalization
+of `Storm`'s core API as described in Section 6 of the paper.
 To verify do:
-=======
-The code in [`storm-core`](storm-core/) contains the formalization of Storm's core API as described in Section 6 of the paper.
-To verify the proof do:
->>>>>>> Stashed changes
 
 
 ```bash
@@ -60,7 +55,7 @@ rjhala@khao-soi ~/r/storm-core (master)> stack build --fast
 
 ## Policies (Section 7.1)
 
-The code in [`models/`](models/) contains the policies ported 
+The code in [`models/`](models/) contains the policies ported
 to evaluate expressiveness as described in Section 7.1.
 This directory does not contain verifiable code, only the ported models files.
 The models files are grouped by the original tool they were taken from, e.g., the
@@ -68,13 +63,9 @@ models file for the Calendar application in UrWeb is in [`models/src/UrWeb/Calen
 
 ## Case Studies (Section 7.2)
 
-<<<<<<< Updated upstream
-The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2 can be found [here](case-studies/).
-=======
 The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2
 can be found in [case-studies](case-studies/).
 There is one Haskell/Stack project for each case study.
->>>>>>> Stashed changes
 
 ### Verify the Code
 
