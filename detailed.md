@@ -218,10 +218,11 @@ $ stack build --fast
 Open the file [voltron/server/src/Controllers/Class.hs](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs).
 The function [`addRoster`](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L102) at line 102 implements
 the functionality to enroll a list of students to a class.
-This operation is restricted to instructors of the class which is checked by the [query between lines 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L110).
-Removing the clause `classInstructor' ==. instrId`, i.e., so the line reads:
+This operation is restricted to instructors of the class which is checked by the [query in lines 109 and 110](https://github.com/storm-framework/voltron/blob/1ccdac06802015bf97044e932c8545516eeb7225/server/src/Controllers/Class.hs#L109-L110).
+Removing the clause `classInstructor' ==. instrId`, i.e., so the query reads:
 
 ```haskell
+  cls   <- selectFirstOr (errorResponse status403 Nothing)
                          (className' ==. rosterClass)
 ```
 
