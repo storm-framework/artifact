@@ -1,11 +1,13 @@
 # Detailed Instructions
 
-The following assumes the steps in [Installing Prerequisites](getting-started.md#installing-prerequisites) and
-[Getting the code](getting-started.md#getting-the-code) have been completed.
+The following assumes you have installed 
+the [prerequisites](getting-started.md#prerequisites) 
+and [obtained the code](getting-started.md#getting-the-code).
 
 ## Core (Section 6)
 
-The code in [`storm-core`](storm-core/) contains the formalization of Storm's core API as described in Section 6 of the paper.
+The code in [`storm-core`](storm-core/) contains the formalization 
+of `Storm`'s core API as described in Section 6 of the paper. 
 To verify do:
 
 
@@ -53,15 +55,15 @@ rjhala@khao-soi ~/r/storm-core (master)> stack build --fast
 
 ## Policies (Section 7.1)
 
-The code in [`models/`](models/) contains the policies ported to evaluate expressiveness as described in Section 7.1.
+The code in [`models/`](models/) contains the policies ported 
+to evaluate expressiveness as described in Section 7.1.
 This directory does not contain verifiable code, only the ported models files.
 The models files are grouped by the original tool they were taken from, e.g., the
 models file for the Calendar application in UrWeb is in [`models/src/UrWeb/Calendar/Model.storm`](models/src/UrWeb/Calendar/Model.storm).
 
 ## Case Studies (Section 7.2)
 
-The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2
-can be found [here](case-studies/).
+The case studies used to evaluate the burden Storms's puts on programmers as described in Section 7.2 can be found [here](case-studies/).
 
 ### Verify the Code
 
