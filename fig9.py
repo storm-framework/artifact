@@ -145,7 +145,7 @@ def haskell_loc(directory: Path) -> Counter[str]:
 
 def client_loc(directory: Path) -> int:
     res = subprocess.run(['tokei', '-t', 'Vue,Javascript,TypeScript',
-                          '-o', 'json', str(directory)], capture_output=True)
+                          '-o', 'json', str(directory)], stdout=subprocess.PIPE)
     output = json.loads(res.stdout)
     javascript = output.get('JavaScript', {}).get('code', 0)
     typescript = output.get('TypeScript', {}).get('code', 0)
