@@ -36,7 +36,6 @@ library
       Paths_whishlist
   hs-source-dirs:
       src
-  ghc-options: -fplugin=LiquidHaskell
   build-depends:
       base64-bytestring
     , bytestring

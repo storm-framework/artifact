@@ -64,13 +64,13 @@ packages:
     url: https://github.com/PLSysSec/frankie/archive/b9ee2c0f7667025d0d0ac3a43ded43d1d1d63c28.tar.gz
     size: 18539
 - original:
-    url: https://github.com/storm-framework/storm/archive/f746ff1bf4876ac55618224b41a1271db291608a.tar.gz
+    url: https://github.com/storm-framework/storm/archive/90ac0528832dea42c3abaa0090bf505ddd223f35.tar.gz
   completed:
     pantry-tree:
-      sha256: 0e5f7a332164bb48b87df04d03ce004fddd32faf5680483abe97744e6db86ec6
-      size: 1319
+      sha256: 8994febec9f52388ea56b5b71dc9e44a64a50416b3a8453decbfb59aa70c7f89
+      size: 1320
     version: 0.1.0.0
     name: storm
-    sha256: 3977c7f9e458eea7d5349884253975a345788caf94a5dd20475ac8c5be5f09fc
-    url: https://github.com/storm-framework/storm/archive/f746ff1bf4876ac55618224b41a1271db291608a.tar.gz
-    size: 14662
+    sha256: 95cd9e9e8c03e1b19ff503f35685aa579247756bcbdca216af93ee605a5c536f
+    url: https://github.com/storm-framework/storm/archive/90ac0528832dea42c3abaa0090bf505ddd223f35.tar.gz
+    size: 15713

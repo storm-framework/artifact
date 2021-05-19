@@ -49,7 +49,7 @@ extra-deps:
 - github: PLSysSec/frankie
   commit: b9ee2c0f7667025d0d0ac3a43ded43d1d1d63c28
 - github: storm-framework/storm
-  commit: f746ff1bf4876ac55618224b41a1271db291608a
+  commit: 90ac0528832dea42c3abaa0090bf505ddd223f35
 
 
 # Override default flag values for local packages and extra-deps
