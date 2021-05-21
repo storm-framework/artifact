@@ -17,10 +17,10 @@ RUN wget -qO- https://get.haskellstack.org/ | sh
 ENV PATH=/root/.local/bin:$PATH
 
 # Install Z3
-RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.10/z3-4.8.10-x64-ubuntu-18.04.zip
-RUN unzip z3-4.8.10-x64-ubuntu-18.04.zip
-RUN rm z3-4.8.10-x64-ubuntu-18.04.zip
-ENV PATH=/z3-4.8.10-x64-ubuntu-18.04/bin/:$PATH
+RUN wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.8/z3-4.8.8-x64-ubuntu-16.04.zip
+RUN unzip z3-4.8.8-x64-ubuntu-16.04.zip
+RUN rm z3-4.8.8-x64-ubuntu-16.04.zip
+ENV PATH=/z3-4.8.8-x64-ubuntu-16.04/bin/:$PATH
 
 # Install Tokei
 RUN wget https://github.com/XAMPPRocky/tokei/releases/download/v12.1.2/tokei-x86_64-unknown-linux-gnu.tar.gz
