@@ -11,8 +11,8 @@ as the required software is pre-installed.
 - [stack v2.5.1](https://docs.haskellstack.org/en/stable/README/) 
   Follow [these instructions](https://docs.haskellstack.org/en/stable/README/#how-to-install) to install `stack`.
 
-- [z3 v4.8.10](https://github.com/Z3Prover/z3) 
-  A copy of the precompiled `z3` binary [available here](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.18) needs to be in the path. 
+- [z3 v4.8.8](https://github.com/Z3Prover/z3) 
+  A copy of the precompiled `z3` binary [available here](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.8) needs to be in the path. 
   You can ignore the shared libraries and bindings for Java and Python; just
   download and place a suitable `z3` binary somewhere in your `$PATH`.
 
